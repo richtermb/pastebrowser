@@ -7,13 +7,16 @@ import glob
 
 from indexer import api
 
-STORAGE_PATH = join(Path.home(), '.pastebrowser')
-METADATA_PATH = join(STORAGE_PATH, 'metadata')
-SAVED_PATH = join(STORAGE_PATH, 'saved')
+PASTEBROWSER_PATH = join(Path.home(), '.pastebrowser')
+STORAGE_PATH = join(PASTEBROWSER_PATH, 'chunks')
+METADATA_PATH = join(PASTEBROWSER_PATH, 'metadata')
+SAVED_PATH = join(PASTEBROWSER_PATH, 'saved')
 
 class BasicStorage(object):
     @staticmethod
     def setup():
+        if not isdir(PASTEBROWSER_PATH):
+            mkdir(PASTEBROWSER_PATH)
         if not isdir(STORAGE_PATH):
             mkdir(STORAGE_PATH)
         if not isdir(METADATA_PATH):
@@ -63,5 +66,7 @@ class BasicStorage(object):
             fp.write(api.PastebinAPI.get_raw(key))
 
     @staticmethod
-    def get_files():
-        return glob.glob(join(STORAGE_PATH, '*.json'))
+    def get_files(metadata=False):
+        if not metadata:
+            return glob.glob(join(STORAGE_PATH, '*.json'))
+        return glob.glob(join(METADATA_PATH, '*.json'))
