@@ -1,4 +1,6 @@
 from indexer import api, storage
+import concurrent.futures
+import sys
 
 
 class Indexer(object):
@@ -7,9 +9,11 @@ class Indexer(object):
         storage.BasicStorage.setup()
 
     def index(self, callback):
-        for note in api.PastebinAPI.get_recents():
-            storage.BasicStorage.store(note)
-            callback()
+        notes = list(api.PastebinAPI.get_recents())
+        sys.stdout.write('refreshing...')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(notes)) as executor:
+            executor.map(storage.BasicStorage.store, notes)
+        sys.stdout.write('...done!\n')
 
     def forward(self):
         self.tracker += 1

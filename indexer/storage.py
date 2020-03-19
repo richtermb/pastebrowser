@@ -14,10 +14,8 @@ class BasicStorage(object):
     @staticmethod
     def setup():
         if not isdir(STORAGE_PATH):
-            print(STORAGE_PATH)
             mkdir(STORAGE_PATH)
         if not isdir(METADATA_PATH):
-            print(METADATA_PATH)
             mkdir(METADATA_PATH)
 
     @staticmethod

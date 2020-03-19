@@ -1,7 +1,8 @@
 from indexer import indexer
 import googletrans
 import random
-
+import requests
+import os
 
 def refresh():
     print('stored note')
@@ -38,6 +39,7 @@ if __name__ == '__main__':
         if command == '3':
             idxr.index(refresh)
             notes = indexer.storage.BasicStorage.get_files()
+            random.shuffle(notes)
         if command == 't':
             with open(notes[idxr.tracker], 'r') as fp:
                 translator = googletrans.Translator()
@@ -46,6 +48,12 @@ if __name__ == '__main__':
         if command == 'o':
             derived_key = notes[idxr.tracker].split('/')[-1].replace('.json', '')
             metadata = indexer.storage.BasicStorage.load_metadata(derived_key)
+            print(metadata)
             print(indexer.api.PastebinAPI.get_raw(derived_key))
         if command == 'l':
             print('length:{}'.format(len(notes)))
+        if command == 'g':
+            r = requests.get()
+        if command == 'd':
+            os.remove(notes[idxr.tracker])
+            print('removed.')
