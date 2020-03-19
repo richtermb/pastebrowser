@@ -37,7 +37,7 @@ if __name__ == '__main__':
             key = input()
             print(indexer.api.PastebinAPI.get_raw(key))
         if command == '3':
-            idxr.index(refresh)
+            idxr.index()
             notes = indexer.storage.BasicStorage.get_files()
             random.shuffle(notes)
         if command == 't':
@@ -57,3 +57,7 @@ if __name__ == '__main__':
         if command == 'd':
             os.remove(notes[idxr.tracker])
             print('removed.')
+        if command[0] == '>':
+            derived_key = notes[idxr.tracker].split('/')[-1].replace('.json', '')
+            indexer.storage.BasicStorage.save_key(derived_key, command.split('>')[1])
+            print('saved paste.')

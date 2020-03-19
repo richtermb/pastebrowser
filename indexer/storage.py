@@ -9,6 +9,7 @@ from indexer import api
 
 STORAGE_PATH = join(Path.home(), '.pastebrowser')
 METADATA_PATH = join(STORAGE_PATH, 'metadata')
+SAVED_PATH = join(STORAGE_PATH, 'saved')
 
 class BasicStorage(object):
     @staticmethod
@@ -17,17 +18,20 @@ class BasicStorage(object):
             mkdir(STORAGE_PATH)
         if not isdir(METADATA_PATH):
             mkdir(METADATA_PATH)
+        if not isdir(SAVED_PATH):
+            mkdir(SAVED_PATH)
 
     @staticmethod
-    def store(note):
+    def store(note, truncated=True, name=None):
+        if not name:
+            name = note['key']
         BasicStorage.store_metadata(note)
-        note_path = join('{}'.format(STORAGE_PATH), '{}.json'.format(note['key']))
+        note_path = join('{}'.format(STORAGE_PATH), '{}.json'.format(name))
         with open(note_path, 'w+') as fp:
-            if int(note['size']) > 250:
+            if int(note['size']) > 250 and truncated:
                 fp.write(api.PastebinAPI.get_raw(note['key'])[:249])
             else:
                 fp.write(api.PastebinAPI.get_raw(note['key']))
-
     @staticmethod
     def load_note(syntax, key):
         note_path = join('{}'.format(STORAGE_PATH), '{}.json'.format(key))
@@ -48,10 +52,15 @@ class BasicStorage(object):
     @staticmethod
     def load_metadata(key):
         metadata_path = join(METADATA_PATH, '{}.json'.format(key))
-        print(metadata_path)
         with open(metadata_path, 'r') as metadata_fp:
             return json.load(metadata_fp)
         return None
+
+    @staticmethod
+    def save_key(key, name):
+        file_path = join(SAVED_PATH, '{}'.format(name))
+        with open(file_path, 'w+') as fp:
+            fp.write(api.PastebinAPI.get_raw(key))
 
     @staticmethod
     def get_files():
